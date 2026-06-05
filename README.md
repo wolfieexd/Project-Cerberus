@@ -1,6 +1,6 @@
 # Advanced Self-Protecting Encrypted Removable Storage System
 
-## Project Codename: **FORTRESS-USB**
+## Project Codename: **Cerberus**
 
 [![Security](https://img.shields.io/badge/Security-AES--256--GCM-green)]()
 [![KDF](https://img.shields.io/badge/KDF-Argon2id-blue)]()
@@ -103,6 +103,3 @@ secure_usb/
 ⚠️ **WARNING**: This system implements irreversible crypto-shredding. Once triggered, 
 encrypted data becomes permanently irrecoverable. Use with extreme caution.
 
-## Authors
-
-FORTRESS-USB Security Engineering Team
