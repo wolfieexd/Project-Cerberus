@@ -1,0 +1,64 @@
+{
+    "vault": {
+        "version": "1.0.0",
+        "device_label": "FORTRESS",
+        "partition_a_label": "FORTRESS-LAUNCH",
+        "partition_b_label": "FORTRESS-VAULT"
+    },
+    "crypto": {
+        "cipher": "AES-256-GCM",
+        "nonce_length": 12,
+        "tag_length": 16,
+        "key_length": 32,
+        "chunk_size": 1048576
+    },
+    "kdf": {
+        "algorithm": "argon2id",
+        "time_cost": 4,
+        "memory_cost": 262144,
+        "parallelism": 8,
+        "hash_len": 32,
+        "salt_len": 16
+    },
+    "auth": {
+        "max_attempts": 3,
+        "lockout_action": "crypto_shred"
+    },
+    "timer": {
+        "initial_duration_seconds": 120,
+        "tick_interval_ms": 100,
+        "persist_interval_ms": 1000,
+        "warning_threshold_seconds": 30
+    },
+    "trusted_devices": {
+        "max_devices": 10,
+        "fingerprint_version": 1,
+        "fingerprint_components": [
+            "system_uuid",
+            "motherboard_serial",
+            "windows_sid"
+        ],
+        "auto_unlock_enabled": true,
+        "tpm_required": false
+    },
+    "forensics": {
+        "collector_version": "1.0.0",
+        "collection_timeout_seconds": 10,
+        "log_chain_algorithm": "SHA-256",
+        "evidence_hmac_algorithm": "HMAC-SHA256"
+    },
+    "gui": {
+        "theme": "dark",
+        "window_width": 480,
+        "window_height": 640,
+        "always_on_top": true,
+        "show_countdown": true,
+        "show_attempts": true
+    },
+    "logging": {
+        "level": "INFO",
+        "format": "json",
+        "max_entries": 10000,
+        "rotate_size_mb": 10
+    }
+}

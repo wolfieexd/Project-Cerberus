@@ -1,0 +1,22 @@
+# Development & Testing Dependencies (extends requirements.txt)
+-r requirements.txt
+
+# Testing
+pytest>=8.0.0               # Test framework
+pytest-cov>=4.1.0           # Coverage reporting
+pytest-timeout>=2.2.0       # Test timeout enforcement
+pytest-mock>=3.12.0         # Mocking utilities
+hypothesis>=6.92.0          # Property-based testing (for crypto edge cases)
+
+# Code Quality
+ruff>=0.1.0                 # Linting and formatting
+mypy>=1.8.0                 # Static type checking
+bandit>=1.7.0               # Security-focused static analysis
+
+# Documentation
+sphinx>=7.0.0               # Documentation generation
+sphinx-rtd-theme>=2.0.0     # ReadTheDocs theme
+
+# Development Utilities
+ipython>=8.18.0             # Enhanced REPL for debugging
+rich>=13.7.0                # Rich terminal output for development

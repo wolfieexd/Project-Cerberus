@@ -1,0 +1,23 @@
+# ============================================================================
+# FORTRESS-USB: Advanced Self-Protecting Encrypted Removable Storage System
+# ============================================================================
+# Production Dependencies
+# ============================================================================
+
+# Cryptography
+cryptography>=42.0.0        # AES-256-GCM, HKDF, key management
+argon2-cffi>=23.1.0         # Argon2id key derivation
+
+# GUI Framework
+PySide6>=6.6.0              # Qt6-based GUI (splash, unlock, countdown screens)
+
+# System Integration
+pywin32>=306                # Windows API access (VirtualLock, SecureZeroMemory)
+wmi>=1.5.1                  # Windows Management Instrumentation (machine fingerprinting)
+psutil>=5.9.0               # Process and system utilities
+
+# Packaging
+pyinstaller>=6.0.0          # Single-file .exe packaging
+
+# Utilities
+pydantic>=2.5.0             # Configuration validation and data models
