@@ -11,7 +11,7 @@
 
 ## Overview
 
-FORTRESS-USB is a production-quality secure removable storage system that protects 
+Project Cerberus is a production-quality secure removable storage system that protects 
 sensitive information through a multi-layered cryptographic architecture. The system 
 provides defense-in-depth against unauthorized access, USB theft, brute-force attacks, 
 and offline extraction attempts.
