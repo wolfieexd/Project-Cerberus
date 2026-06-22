@@ -56,6 +56,13 @@ class VaultDatabase:
         UNIQUE(file_uuid, chunk_index)
     );
 
+    CREATE TABLE IF NOT EXISTS key_container (
+        id INTEGER PRIMARY KEY CHECK (id = 1),
+        kek_salt BLOB NOT NULL,
+        wrapped_mek BLOB NOT NULL,
+        mek_wrap_nonce BLOB NOT NULL
+    );
+
     CREATE INDEX IF NOT EXISTS idx_file_uuid ON encrypted_file_index(file_uuid);
     CREATE INDEX IF NOT EXISTS idx_chunk_file ON file_chunks(file_uuid);
     """
@@ -192,3 +199,22 @@ class VaultDatabase:
                 "UPDATE encrypted_file_index SET is_deleted = 1 WHERE file_uuid = ?", 
                 (file_uuid,)
             )
+
+    def store_key_blob(self, salt: bytes, wrapped_mek: bytes, nonce: bytes) -> None:
+        with self.get_connection() as conn:
+            conn.execute("DELETE FROM key_container WHERE id = 1")
+            conn.execute(
+                "INSERT INTO key_container (id, kek_salt, wrapped_mek, mek_wrap_nonce) VALUES (1, ?, ?, ?)",
+                (salt, wrapped_mek, nonce)
+            )
+
+    def get_key_blob(self) -> dict:
+        with self.get_connection() as conn:
+            row = conn.execute("SELECT * FROM key_container WHERE id = 1").fetchone()
+            if row:
+                return {
+                    "salt": row['kek_salt'],
+                    "wrapped_mek": row['wrapped_mek'],
+                    "nonce": row['mek_wrap_nonce']
+                }
+        return None
