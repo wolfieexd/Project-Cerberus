@@ -18,6 +18,15 @@ class SystemDatabase:
         is_locked_out INTEGER NOT NULL DEFAULT 0,
         last_attempt_at TEXT
     );
+    
+    CREATE TABLE IF NOT EXISTS timer_state (
+        id INTEGER PRIMARY KEY CHECK (id = 1),
+        initial_duration_ms INTEGER NOT NULL DEFAULT 120000,
+        remaining_ms INTEGER NOT NULL DEFAULT 120000,
+        last_tick_at TEXT,
+        is_running INTEGER NOT NULL DEFAULT 0,
+        is_expired INTEGER NOT NULL DEFAULT 0
+    );
     """
     
     def __init__(self, db_path: str):
@@ -31,10 +40,11 @@ class SystemDatabase:
             conn.execute("PRAGMA journal_mode = WAL;")
             conn.execute("PRAGMA synchronous = FULL;")
             
-            # Ensure singleton row exists
-            row = conn.execute("SELECT id FROM auth_attempts WHERE id = 1").fetchone()
-            if not row:
+            # Ensure singleton rows exist
+            if not conn.execute("SELECT id FROM auth_attempts WHERE id = 1").fetchone():
                 conn.execute("INSERT INTO auth_attempts (id) VALUES (1)")
+            if not conn.execute("SELECT id FROM timer_state WHERE id = 1").fetchone():
+                conn.execute("INSERT INTO timer_state (id) VALUES (1)")
 
     @contextmanager
     def get_connection(self):
@@ -86,3 +96,28 @@ class SystemDatabase:
         now = datetime.datetime.utcnow().isoformat()
         with self.get_connection() as conn:
             conn.execute("UPDATE auth_attempts SET successful_count = successful_count + 1, failed_count = 0, last_attempt_at = ? WHERE id = 1", (now,))
+
+    def get_timer_state(self) -> dict:
+        with self.get_connection() as conn:
+            row = conn.execute("SELECT * FROM timer_state WHERE id = 1").fetchone()
+            if row:
+                return {
+                    "initial_duration_ms": row["initial_duration_ms"],
+                    "remaining_ms": row["remaining_ms"],
+                    "last_tick_at": row["last_tick_at"],
+                    "is_running": bool(row["is_running"]),
+                    "is_expired": bool(row["is_expired"])
+                }
+        return {}
+
+    def update_timer_state(self, remaining_ms: int, is_running: bool, is_expired: bool) -> None:
+        now = datetime.datetime.utcnow().isoformat()
+        with self.get_connection() as conn:
+            conn.execute(
+                """
+                UPDATE timer_state 
+                SET remaining_ms = ?, is_running = ?, is_expired = ?, last_tick_at = ? 
+                WHERE id = 1
+                """,
+                (remaining_ms, int(is_running), int(is_expired), now)
+            )
