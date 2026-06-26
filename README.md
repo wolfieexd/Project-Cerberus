@@ -40,7 +40,7 @@ This project follows a **Risk-Driven Spiral SDLC** with 12 iterative phases:
 | 3 | Secure Storage Layer | ✅ Complete |
 | 4 | Authentication Layer | ✅ Complete |
 | 5 | Persistent Timer Layer | ✅ Complete |
-| 6 | Trusted Device Framework | 🔄 In Progress |
+| 6 | Trusted Device Framework | 🚫 Skipped (Zero Trust Policy) |
 | 7 | Forensic Logging Engine | ⏳ Pending |
 | 8 | Crypto-Shredding Engine | ⏳ Pending |
 | 9 | GUI Application | ⏳ Pending |
