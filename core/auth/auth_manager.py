@@ -12,11 +12,12 @@ class AuthManager:
     Manages user authentication, attempt limits, and vault access.
     """
     
-    def __init__(self, system_db_path: str, vault_db_path: str, data_dir: str, key_manager: KeyManager):
+    def __init__(self, system_db_path: str, vault_db_path: str, data_dir: str, key_manager: KeyManager, audit_logger=None):
         self.system_db = SystemDatabase(system_db_path)
         self.vault_db = VaultDatabase(vault_db_path)
         self.data_dir = data_dir
         self.key_manager = key_manager
+        self.audit_logger = audit_logger
         
     def setup_new_vault(self, password: str) -> None:
         """
@@ -55,6 +56,10 @@ class AuthManager:
             # If successful, reset failed attempts
             self.system_db.record_successful_attempt()
             
+            # Log success
+            if self.audit_logger:
+                self.audit_logger.log_event("AUTH_SUCCESS", {"attempts_remaining": self.get_remaining_attempts()})
+                
             # Initialize AESEngine with the unwrapped MEK
             aes_engine = AESEngine(mek)
             
@@ -63,7 +68,13 @@ class AuthManager:
         except InvalidTag:
             # Wrong password
             locked_out = self.system_db.record_failed_attempt()
+            
+            if self.audit_logger:
+                self.audit_logger.log_event("AUTH_FAILURE", {"attempts_remaining": self.get_remaining_attempts()})
+                
             if locked_out:
+                if self.audit_logger:
+                    self.audit_logger.log_event("SYSTEM_LOCKOUT", {"reason": "Max authentication attempts reached"})
                 # Trigger crypto-shredding (to be implemented)
                 pass
             raise

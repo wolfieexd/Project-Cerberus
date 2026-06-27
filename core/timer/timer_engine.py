@@ -8,8 +8,9 @@ class TimerEngine:
     Synchronizes state with the system database.
     """
     
-    def __init__(self, system_db: SystemDatabase):
+    def __init__(self, system_db: SystemDatabase, audit_logger=None):
         self.system_db = system_db
+        self.audit_logger = audit_logger
         self.state = self.system_db.get_timer_state()
         self._last_tick_time = None
         
@@ -24,6 +25,9 @@ class TimerEngine:
         self.state["is_running"] = True
         self._last_tick_time = time.time()
         self._flush_state()
+        
+        if self.audit_logger:
+            self.audit_logger.log_event("TIMER_STARTED", {"remaining_ms": self.state["remaining_ms"]})
         
     def tick(self) -> None:
         """
@@ -42,6 +46,8 @@ class TimerEngine:
                 self.state["remaining_ms"] = 0
                 self.state["is_expired"] = True
                 self.state["is_running"] = False
+                if self.audit_logger:
+                    self.audit_logger.log_event("TIMER_EXPIRED", {"reason": "Countdown reached zero"})
             else:
                 self.state["remaining_ms"] = new_remaining
                 
@@ -59,6 +65,9 @@ class TimerEngine:
         self.state["is_running"] = False
         self._last_tick_time = None
         self._flush_state()
+        
+        if self.audit_logger:
+            self.audit_logger.log_event("TIMER_PAUSED", {"remaining_ms": self.state["remaining_ms"]})
         
     def is_expired(self) -> bool:
         return self.state.get("is_expired", False)
